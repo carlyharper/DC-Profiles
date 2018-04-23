@@ -33,18 +33,30 @@ $(function(){
         };
         testHTML = renderStudents(currentStudents);
         $('.students-cont').html(testHTML);
+
+        $('.btn').on('input', function(searchData){
+            var searchString = $('.search-bar').val();
+            var urlEncodedSearchString = encodeURIComponent(searchString);
+
+            $.get('https://s3.amazonaws.com/dc-profiles/Students.json', function(){
+            });
+        });
     });
-    //});
-        
-        
-
-        //make html lines for each returned data piece 
-
-        //showcase?
-
-
-    
-
 });
 
+	// $('.transactions').html(renderTransactions(fullTransactionData));
+	
+	// $('.search-input').on('input', function(e) {
+	// 	debugger;
+	// 	var searchString = e.target.value.toLowerCase();
+	// 	var filteredData = _.filter(fullTransactionData, function(transaction){
+	// 		var foundInName    = transaction.name.toLowerCase().indexOf(searchString) > -1;
+	// 		var foundInFor     = transaction.for.toLowerCase().indexOf(searchString) > -1;
+	// 		var foundInDate    = transaction.date.toLowerCase().indexOf(searchString) > -1;
+	// 		var foundInAmount  = transaction.amount.toLowerCase().indexOf(searchString) > -1;
+	// 		return foundInName || foundInFor || foundInDate || foundInAmount;
+	// 	});
+
+	// 	$('.transactions').html(renderTransactions(filteredData));
+	// });
 
