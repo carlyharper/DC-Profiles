@@ -1,62 +1,69 @@
 $(function(){
+    var studentCardArray = [];
+
     $.get('https://s3.amazonaws.com/dc-profiles/Students.json', function(currentStudents){;
         //console.table(currentStudents[0]);
-        currentStudents.sort(function(a, b){return 0.5 - Math.random()});
-        
-        function renderStudents(studentArray){
-            var studentProfile = "";
+        studentCardArray = currentStudents.sort(function(a, b){return 0.5 - Math.random()});
+        var studentHTML = renderStudents(studentCardArray);
+        $('.students-cont').html(studentHTML);
+    }); 
 
-            studentArray.forEach(function(currentStudent){
-                studentProfile += '<div class="student card border-primary">';
-                studentProfile += '<div class="card-body">'
-                studentProfile += '<p class="firstName">'+ currentStudent.firstName  +'</p>'
-                studentProfile += '<p class="fullName">'+ currentStudent.fullName  +'</p>'
-                studentProfile += '<p class="id">'+ currentStudent.id  +'</p>'
-                studentProfile += '<p class="porfolioUrl">'+ currentStudent.portfolioUrl  +'</p>'
-                studentProfile += '<p class="githubUrl">'+ currentStudent.githubUrl  +'</p>'
-                studentProfile += '<p class="linkedinUrl">'+ currentStudent.linkedinUrl  +'</p>'
-                studentProfile += '<p class="fullBio">'+ currentStudent.fullBio +'</p>'
-                studentProfile += '<p class="missionStatement">'+ currentStudent.missionStatement +'</p>'
-                studentProfile += '<p class="email">'+ currentStudent.email  +'</p>'
+    function renderStudents(studentArray){
+        var studentProfile = "";
+        var fancyHTML = "";
 
+        studentArray.forEach(function(currentStudent){
+            studentProfile += '<div class="student card border-primary">';
+            studentProfile += '<div class="card-body">'
+            studentProfile += '<p class="fullName">'+ currentStudent.fullName  +'</p>'
+            studentProfile += '<p class="missionStatement">'+ currentStudent.missionStatement +'</p>'
+            studentProfile += '<p class="email">'+ currentStudent.email +'</p>'
+
+            if(currentStudent.showcase > 0);{
                 currentStudent.showcase.forEach(function(show){ 
                     studentProfile += '<p class="showcase">'+ show.projectName +'</p>'
-                    studentProfile += '<p class="showcase">'+ show.url +'</p>'
-                    studentProfile += '<p class="showcase">'+ show.githubUrl +'</p>'
-                    studentProfile += '<p class="showcase">'+ show.description +'</p>'
-                    studentProfile += '<p class="showcase">'+ show.demoVideo +'</p>'
+                    studentProfile += '<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#'+ currentStudent.id +'">Learn more about '+ currentStudent.firstName +'</button>'
+                    studentProfile += '</div>'
+                    studentProfile += '</div>'
                 });
-                studentProfile += '</div>'
-                studentProfile += '</div>';
-            });
-            return studentProfile;   
-        };
-        testHTML = renderStudents(currentStudents);
-        $('.students-cont').html(testHTML);
+            };
 
-        $('.btn').on('input', function(searchData){
-            var searchString = $('.search-bar').val();
-            var urlEncodedSearchString = encodeURIComponent(searchString);
-
-            $.get('https://s3.amazonaws.com/dc-profiles/Students.json', function(){
-            });
+            fancyHTML += '<div class="modal fade id="'+ currentStudent.id +'" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">'
+            fancyHTML += '<div class="modal-dialog modal-dialog-centered" role="document">'
+            fancyHTML += '<div class="modal-content">'
+            fancyHTML += '<div class="modal-header">'
+            fancyHTML += '<h5 class="modal-title" id="'+ currentStudent.id +'">Modal title</h5>'
+            fancyHTML += '<button type="button" class="close" data-dismiss="modal" aria-label="Close">'
+            fancyHTML += '<span aria-hidden="true">&times;</span>'
+            fancyHTML += '</button>'
+            fancyHTML += '</div>'
+            fancyHTML += '<div class="modal-body">'
+            fancyHTML += '<p>'+currentStudent.fullBio+ '</p>'
+            fancyHTML += '</div>'
+            fancyHTML += '<div class="modal-footer">'
+            fancyHTML += '<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>'
+            fancyHTML += '<button type="button" class="btn btn-primary">Save changes</button>'
+            fancyHTML += '</div>'
+            fancyHTML += '</div>'
+            fancyHTML += '</div>'
+            fancyHTML += '</div>'
         });
+            $('.students-cont').append(studentProfile); 
+            $('.modal-cont').append(fancyHTML); 
+    };
+
+    $('.search-button').on('click', function(e){
+        e.preventDefault();
+        var searchString = $('.search-bar').val();
+        var filteredStudents = studentCardArray.filter(function(currentStudents){
+            var foundInFirstName    = currentStudents.firstName.toLowerCase().indexOf(searchString.toLowerCase()) > -1;
+            var foundInFullName     = currentStudents.fullName.toLowerCase().indexOf(searchString.toLowerCase()) > -1;
+            var foundInFullBio   = currentStudents.fullBio.toLowerCase().indexOf(searchString.toLowerCase()) > -1;
+            return foundInFirstName || foundInFullName || foundInFullBio;
+        });
+        $('.students-cont').html(renderStudents(filteredStudents));
     });
-});
+}); 
 
-	// $('.transactions').html(renderTransactions(fullTransactionData));
-	
-	// $('.search-input').on('input', function(e) {
-	// 	debugger;
-	// 	var searchString = e.target.value.toLowerCase();
-	// 	var filteredData = _.filter(fullTransactionData, function(transaction){
-	// 		var foundInName    = transaction.name.toLowerCase().indexOf(searchString) > -1;
-	// 		var foundInFor     = transaction.for.toLowerCase().indexOf(searchString) > -1;
-	// 		var foundInDate    = transaction.date.toLowerCase().indexOf(searchString) > -1;
-	// 		var foundInAmount  = transaction.amount.toLowerCase().indexOf(searchString) > -1;
-	// 		return foundInName || foundInFor || foundInDate || foundInAmount;
-	// 	});
 
-	// 	$('.transactions').html(renderTransactions(filteredData));
-	// });
 
